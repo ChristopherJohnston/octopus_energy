@@ -12,7 +12,7 @@ PACKAGE_DIR = (HERE/"src")
 # This call to setup() does all the work
 setup(
     name="octopus-energy-client",
-    version="0.0.7",
+    version="0.0.8",
     description="Read the latest Real Python tutorials",
     long_description=README,
     long_description_content_type="text/markdown",
