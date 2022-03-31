@@ -11,10 +11,12 @@ class TestClient(unittest.TestCase):
         super().setUp()
         
         self.api_key = "123456"
+        self.electricity_tariff_prefix = "TEST-E-1R-"
         self.electricity_serial = "abc1234"
         self.electricity_mpan = "1234567890"
         self.electricity_product_code = "21JBLAH"
         self.electricity_region = "Z"
+        self.gas_tariff_prefix = "TEST-G-1R-"
         self.gas_serial = "cba4321"
         self.gas_mprn = "0987654321"
         self.gas_product_code = "12XFOO"
@@ -23,10 +25,12 @@ class TestClient(unittest.TestCase):
 
         self.client = OctopusEnergy(
             api_key=self.api_key,
+            electricity_tariff_prefix=self.electricity_tariff_prefix,
             electricity_serial=self.electricity_serial,
             electricity_mpan=self.electricity_mpan,
             electricity_product_code=self.electricity_product_code,
             electricity_region=self.electricity_region,
+            gas_tariff_prefix=self.gas_tariff_prefix,
             gas_serial=self.gas_serial,
             gas_mprn=self.gas_mprn,
             gas_product_code=self.gas_product_code,
@@ -38,8 +42,8 @@ class TestClient(unittest.TestCase):
         self.assertEqual(self.client.meter_url(ResourceType.GAS), f"{self.client.base_url}/gas-meter-points/{self.gas_mprn}")
 
     def test_tariff_url(self):
-        self.assertEqual(self.client.tariff_url(ResourceType.ELECTRICITY), f"{self.client.base_url}/products/{self.electricity_product_code}/electricity-tariffs/E-1R-{self.electricity_product_code}-{self.electricity_region}")
-        self.assertEqual(self.client.tariff_url(ResourceType.GAS), f"{self.client.base_url}/products/{self.gas_product_code}/gas-tariffs/E-1R-{self.gas_product_code}-{self.gas_region}")
+        self.assertEqual(self.client.tariff_url(ResourceType.ELECTRICITY), f"{self.client.base_url}/products/{self.electricity_product_code}/electricity-tariffs/{self.electricity_tariff_prefix}{self.electricity_product_code}-{self.electricity_region}")
+        self.assertEqual(self.client.tariff_url(ResourceType.GAS), f"{self.client.base_url}/products/{self.gas_product_code}/gas-tariffs/{self.gas_tariff_prefix}{self.gas_product_code}-{self.gas_region}")
 
     def test_consumption_url(self):
         self.assertEqual(self.client.consumption_url(ResourceType.ELECTRICITY), f"{self.client.base_url}/electricity-meter-points/{self.electricity_mpan}/meters/{self.electricity_serial}/consumption")
