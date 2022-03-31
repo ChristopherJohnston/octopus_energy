@@ -21,10 +21,12 @@ class OctopusEnergy:
     def __init__(
         self,
         api_key=None,
+        electricity_tariff_prefix="E-1R-",
         electricity_serial=None,
         electricity_mpan=None,
         electricity_product_code=None,
         electricity_region=None,
+        gas_tariff_prefix="G-1R-",
         gas_serial=None,
         gas_mprn=None,
         gas_product_code=None,
@@ -48,11 +50,13 @@ class OctopusEnergy:
         :param str gas_region: The region for the gas product. Default: environ['OCTOPUS_GAS_REGION']
         """        
         self.api_key = api_key or os.environ["OCTOPUS_API_KEY"]
+        self.octopus_electricity_tariff_prefix = electricity_tariff_prefix
         self.octopus_electricity_serial = electricity_serial or os.environ['OCTOPUS_ELECTRICITY_SERIAL']
         self.octopus_electricity_mpan = electricity_mpan or os.environ['OCTOPUS_ELECTRICITY_MPAN']
         self.ocopus_electricity_product_code = electricity_product_code or os.environ.get("OCTOPUS_ELECTRICITY_PRODUCT_CODE", "AGILE-18-02-21")
         self.octopus_elecricity_region = electricity_region or os.environ.get("OCTOPUS_ELECTRICITY_REGION", "C")
 
+        self.octopus_gas_tariff_prefix = gas_tariff_prefix
         self.octopus_gas_serial = gas_serial or os.environ['OCTOPUS_GAS_SERIAL']
         self.octopus_gas_mprn = gas_mprn or os.environ['OCTOPUS_GAS_MPRN']
         self.octopus_gas_product_code = gas_product_code or os.environ.get("OCTOPUS_GAS_PRODUCT_CODE", "AGILE-18-02-21")
@@ -73,6 +77,9 @@ class OctopusEnergy:
             meter_url = f"electricity-meter-points/{self.octopus_electricity_mpan}"
         elif resource_type == ResourceType.GAS:
             meter_url = f"gas-meter-points/{self.octopus_gas_mprn}"
+        else:
+            meter_url = ""
+            
         return f"{self.base_url}/{meter_url}"
 
     def tariff_url(self, resource_type):
@@ -85,9 +92,11 @@ class OctopusEnergy:
         """
 
         if resource_type == ResourceType.ELECTRICITY:
-            tariff_url = f"{self.ocopus_electricity_product_code}/electricity-tariffs/E-1R-{self.ocopus_electricity_product_code}-{self.octopus_elecricity_region}"
+            tariff_url = f"{self.ocopus_electricity_product_code}/electricity-tariffs/{self.octopus_electricity_tariff_prefix}{self.ocopus_electricity_product_code}-{self.octopus_elecricity_region}"
         elif resource_type == ResourceType.GAS:
-            tariff_url = f"{self.octopus_gas_product_code}/gas-tariffs/E-1R-{self.octopus_gas_product_code}-{self.octopus_gas_region}"
+            tariff_url = f"{self.octopus_gas_product_code}/gas-tariffs/{self.octopus_gas_tariff_prefix}{self.octopus_gas_product_code}-{self.octopus_gas_region}"
+        else:
+            tariff_url = ""
 
         return f"{self.base_url}/products/{tariff_url}"
 
@@ -103,6 +112,8 @@ class OctopusEnergy:
             serial = self.octopus_electricity_serial
         elif resource_type == ResourceType.GAS:
             serial = self.octopus_gas_serial
+        else:
+            serial = ""
 
         return f"{self.meter_url(resource_type)}/meters/{serial}/consumption"
 
